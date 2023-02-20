@@ -9,9 +9,19 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mui/material": "^5.11.8",
     "@next/font": "13.1.5",
+    "cesium": "^1.102.0",
+    "chart.js": "^4.2.0",
+    "csv-reader": "^1.0.11",
+    "formidable": "^2.1.1",
+    "mapbox-gl": "^2.12.0",
+    "neat-csv": "^7.0.0",
     "next": "13.1.5",
     "react": "18.2.0",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "18.2.0"
   }
 }
