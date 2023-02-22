@@ -2,7 +2,7 @@ import mapboxgl from 'mapbox-gl';
 import React, { useRef, useEffect, useState } from 'react';
 import { promises as fs } from 'fs';
 import csv from 'neat-csv';
-import { Line } from 'react-chartjs-2';
+import Carousel from 'react-material-ui-carousel'
 import {
     Chart,
     CategoryScale,
@@ -13,7 +13,7 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-import { Container, Grid, Paper, Typography } from '@mui/material';
+import { Container, Grid, Paper, Stack, Typography } from '@mui/material';
 import GroupFactors from '@/components/GroupFactors';
 import HeadGroup from '@/components/HeadGroup';
 import { Cesium3DTile } from 'cesium';
@@ -34,7 +34,6 @@ Chart.register(
     Legend
 );
 
-mapboxgl.accessToken = 'pk.eyJ1Ijoicnl1a2lwdW5pIiwiYSI6ImNsZGNvbHg1ZzBjaGYzcG1pbmJ3cXRuajgifQ.VAMR7bV5v3IsYwI5lmVzjg';
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyOTEzOTg4ZS1jOTliLTQzNDMtOGEzNy1hY2NlZjU1MmY0MzQiLCJpZCI6MTI0NjIzLCJpYXQiOjE2NzYzNjI0Mzl9.6gEmu5IXcAMGVjAmVbmgo0A3yLU-I28xBCyXRc6CZns'
 
 function computeCircle(radius) {
@@ -189,17 +188,19 @@ export default function ShowMap(props) {
             },
         });
 
-        console.log(flightPath.polylineVolume); // Debugging statement
-
-        flightPath.polylineVolume.addEventListener('click', function (event) {
-            var position = event.position;
-            var cartographic = Cesium.Cartographic.fromCartesian(position);
-            var longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(6);
-            var latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(6);
-            var altitude = cartographic.height.toFixed(2);
-            var message = 'Clicked position: (' + longitude + ', ' + latitude + ', ' + altitude + ')';
-            alert(message);
-        });
+        // Handle the click event on the PolylineVolume entity
+        viewer.screenSpaceEventHandler.setInputAction(function (click) {
+            var pickedObject = viewer.scene.pick(click.position);
+            if (Cesium.defined(pickedObject) && pickedObject.id === flightPath) {
+                var position = viewer.scene.pickPosition(click.position);
+                var cartographic = Cesium.Cartographic.fromCartesian(position);
+                var longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(6);
+                var latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(6);
+                var altitude = cartographic.height.toFixed(2);
+                var message = 'Clicked position: (' + longitude + ', ' + latitude + ', ' + altitude + ')';
+                alert(message);
+            }
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
         // Set the camera position and orientation to focus on the flight path
         viewer.zoomTo(flightPath);
@@ -209,16 +210,24 @@ export default function ShowMap(props) {
     return (
         <div>
 
-            <div id="cesiumContainer" class="fullSize"></div>
+            <div id="cesiumContainer" class="map-container"></div>
             <div id="toolbar"></div>
 
-            {
-                groups.map((group, index) => {
-                    return (
-                        <HeadGroup headTopic={group.headTopic} groupFactors={group.groupFactors} />
-                    )
-                })
-            }
+            <Carousel animation='slide'
+                height="40vh"
+                indicators={false}
+                autoPlay={false}
+                navButtonsAlwaysVisible>
+                {
+                    groups.map((group, index) => {
+                        return (
+
+                            <HeadGroup headTopic={group.headTopic} groupFactors={group.groupFactors} />
+
+                        )
+                    })
+                }
+            </Carousel>
 
             {/* มาใหม่ */}
             {/* <div className="mockupGraph-container">
@@ -311,7 +320,7 @@ export async function getServerSideProps(context) {
     let y_axis = []
     let z_axis = []
     let countData = 0
-    let data = await fs.readFile('python_file/data_to_web/Complete_data.csv', 'utf8');
+    let data = await fs.readFile('python_file/data/data_to_web/Complete_data.csv', 'utf8');
     data = data.replaceAll(/^\uFEFF/gm, "").replaceAll(/^\u00BB\u00BF/gm, "");
     const result = await csv(data);
     for (const row of result) {

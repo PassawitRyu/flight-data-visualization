@@ -3,9 +3,9 @@ import { Grid, Paper, Typography } from "@mui/material";
 export default function GroupFactors(props) {
     return (
         <Paper elevation={3} sx={{
-            my: 5,
             textAlign: 'start',
             p: 4,
+            height: "100%"
         }}>
             <Grid container mb={2}>
                 <Grid item xs={8}>
@@ -22,7 +22,10 @@ export default function GroupFactors(props) {
                             <Grid item xs={8}>
                                 {each.key}
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={4} sx={{
+                                color: each.value === 'LOW' ? '#4CAF50' :
+                                    each.value === 'MEDIUM' ? '#ff9f22' : '#F44336'
+                            }}>
                                 {each.value}
                             </Grid>
                         </Grid>
