@@ -18,18 +18,17 @@ import {
   Paper,
   Stack,
   TextField,
-  Typography,
   Menu,
   MenuItem,
 } from "@mui/material";
 import GroupFactors from "@/components/GroupFactors";
-import { Cesium3DTile } from "cesium";
 
-import { Graph } from "../components/Graph";
+import { Graph } from "../../components/Graph";
 import * as Cesium from "cesium";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { NotValid } from "@/components/NotValid";
 
 Chart.register(
   CategoryScale,
@@ -58,7 +57,15 @@ function computeCircle(radius) {
   return positions;
 }
 
-export default function ShowMap(props) {
+export default function Wrapper(props) {
+  if (props.is_valid) {
+    return <ShowMap {...props}/>
+  } else {
+    return <NotValid />
+  }
+}
+
+function ShowMap(props) {
   const checkpointRef = useRef(false);
   const [startValue, setStartValue] = useState("");
   const [stopValue, setStopValue] = useState("");
@@ -73,7 +80,7 @@ export default function ShowMap(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const [correlation, setCorrelation] = useState([]);
-  
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -175,34 +182,33 @@ export default function ShowMap(props) {
       ],
     },
   ];
-  
 
   function corrcal() {
     // Suppose we have two arrays of data
     let x = [];
-    x.push(props.volt_curr.slice(datasetStart, datasetStop + 1))
-    x.push(props.rcou_c9.slice(datasetStart, datasetStop + 1))
-    x.push(props.qtun_dalt.slice(datasetStart, datasetStop + 1))
-    x.push(props.qtun_alt.slice(datasetStart, datasetStop + 1))
-    x.push(props.tecs_dh.slice(datasetStart, datasetStop + 1))
-    x.push(props.baro_crt.slice(datasetStart, datasetStop + 1))
-    x.push(props.arsp_arsp.slice(datasetStart, datasetStop + 1))
-    x.push(props.ctun_nvap.slice(datasetStart, datasetStop + 1))
-    x.push(props.att_desroll.slice(datasetStart, datasetStop + 1))
-    x.push(props.att_roll.slice(datasetStart, datasetStop + 1))
-    x.push(props.att_yaw.slice(datasetStart, datasetStop + 1))
-    x.push(props.att_desyaw.slice(datasetStart, datasetStop + 1))
-    x.push(props.ctun_rdr.slice(datasetStart, datasetStop + 1))
-    x.push(props.aoa_aoa.slice(datasetStart, datasetStop + 1))
-    x.push(props.aoa_ssa.slice(datasetStart, datasetStop + 1))
-    x.push(props.nkf_vwn.slice(datasetStart, datasetStop + 1))
-    x.push(props.nkf_vwe.slice(datasetStart, datasetStop + 1))
-      
-    const y = props.volt_curr.slice(datasetStart, datasetStop + 1)
+    x.push(props.volt_curr.slice(datasetStart, datasetStop + 1));
+    x.push(props.rcou_c9.slice(datasetStart, datasetStop + 1));
+    x.push(props.qtun_dalt.slice(datasetStart, datasetStop + 1));
+    x.push(props.qtun_alt.slice(datasetStart, datasetStop + 1));
+    x.push(props.tecs_dh.slice(datasetStart, datasetStop + 1));
+    x.push(props.baro_crt.slice(datasetStart, datasetStop + 1));
+    x.push(props.arsp_arsp.slice(datasetStart, datasetStop + 1));
+    x.push(props.ctun_nvap.slice(datasetStart, datasetStop + 1));
+    x.push(props.att_desroll.slice(datasetStart, datasetStop + 1));
+    x.push(props.att_roll.slice(datasetStart, datasetStop + 1));
+    x.push(props.att_yaw.slice(datasetStart, datasetStop + 1));
+    x.push(props.att_desyaw.slice(datasetStart, datasetStop + 1));
+    x.push(props.ctun_rdr.slice(datasetStart, datasetStop + 1));
+    x.push(props.aoa_aoa.slice(datasetStart, datasetStop + 1));
+    x.push(props.aoa_ssa.slice(datasetStart, datasetStop + 1));
+    x.push(props.nkf_vwn.slice(datasetStart, datasetStop + 1));
+    x.push(props.nkf_vwe.slice(datasetStart, datasetStop + 1));
+
+    const y = props.volt_curr.slice(datasetStart, datasetStop + 1);
 
     let corrarr = [];
 
-    for (let i = 0 ; i < x.length ; i++) {
+    for (let i = 0; i < x.length; i++) {
       // Calculate the mean of x and y
       const xMean = x[i].reduce((acc, val) => acc + val) / x[i].length;
       const yMean = y.reduce((acc, val) => acc + val) / y.length;
@@ -223,18 +229,16 @@ export default function ShowMap(props) {
       correlation /= x[i].length * xStd * yStd;
 
       correlation = Math.abs(correlation);
-      corrarr.push(correlation)
+      corrarr.push(correlation);
     }
 
-    for (let i = 0 ; i < corrarr.length ; i++) {
+    for (let i = 0; i < corrarr.length; i++) {
       if (corrarr[i] >= 0.3) {
-        corrarr[i] = ('HIGH');
-      }
-      else if (corrarr[i] < 0.3 && corrarr[i] >= 0.1) {
-        corrarr[i] = ('MEDIUM')
-      } 
-      else {
-        corrarr[i] = ('LOW')
+        corrarr[i] = "HIGH";
+      } else if (corrarr[i] < 0.3 && corrarr[i] >= 0.1) {
+        corrarr[i] = "MEDIUM";
+      } else {
+        corrarr[i] = "LOW";
       }
     }
 
@@ -501,35 +505,43 @@ export default function ShowMap(props) {
       Cesium.Ellipsoid.WGS84.cartographicArrayToCartesianArray(positions);
     viewer.entities.removeAll();
     // Add a PolylineVolume entity for each flight path
-    const slicedPathColor = pathColors.slice(datasetStart, datasetStop + 1)
+    const slicedPathColor = pathColors.slice(datasetStart, datasetStop + 1);
     for (let i = 0; i < positions.length; i += 3) {
       let j = i == 0 ? 1 : i;
       let avrred = 0;
       let avrgreen = 0;
       let red_zero =
-      slicedPathColor[j] < 50 ? 1 - (2 * (slicedPathColor[j] - 50)) / 100.0 : 1.0;
+        slicedPathColor[j] < 50
+          ? 1 - (2 * (slicedPathColor[j] - 50)) / 100.0
+          : 1.0;
       let red_one =
-      slicedPathColor[j + 1] < 50
+        slicedPathColor[j + 1] < 50
           ? 1 - (2 * (slicedPathColor[j + 1] - 50)) / 100.0
           : 1.0;
       let red_two =
-      slicedPathColor[j + 2] < 50
+        slicedPathColor[j + 2] < 50
           ? 1 - (2 * (slicedPathColor[j + 2] - 50)) / 100.0
           : 1.0;
-      let green_zero = slicedPathColor[j] < 50 ? 1.0 : (2 * slicedPathColor[j]) / 100.0;
+      let green_zero =
+        slicedPathColor[j] < 50 ? 1.0 : (2 * slicedPathColor[j]) / 100.0;
       let green_one =
-      slicedPathColor[j + 1] < 50 ? 1.0 : (2 * slicedPathColor[j + 1]) / 100.0;
+        slicedPathColor[j + 1] < 50
+          ? 1.0
+          : (2 * slicedPathColor[j + 1]) / 100.0;
       let green_two =
-      slicedPathColor[j + 2] < 50 ? 1.0 : (2 * slicedPathColor[j + 2]) / 100.0;
+        slicedPathColor[j + 2] < 50
+          ? 1.0
+          : (2 * slicedPathColor[j + 2]) / 100.0;
 
       avrred = (red_zero + red_one + red_two) / 3;
       avrgreen = (green_zero + green_one + green_two) / 3;
-    
-      let pos = i + 3 > positions.length
-      ? positions.slice(j - 1, positions.length)
-      : positions.slice(j - 1, j + 3)
 
-      let color = Cesium.Color.fromBytes(avrred * 255, avrgreen * 255, 0)
+      let pos =
+        i + 3 > positions.length
+          ? positions.slice(j - 1, positions.length)
+          : positions.slice(j - 1, j + 3);
+
+      let color = Cesium.Color.fromBytes(avrred * 255, avrgreen * 255, 0);
 
       let flightPath = viewer.entities.add({
         polylineVolume: {
@@ -800,68 +812,85 @@ export async function getServerSideProps(context) {
   let nkf_vwe = [];
   let volt_curr = [];
   let countData = 0;
-  let data = await fs.readFile(
-    "python_file/data/data_to_web/Complete_data.csv",
-    "utf8"
-  );
-  data = data.replaceAll(/^\uFEFF/gm, "").replaceAll(/^\u00BB\u00BF/gm, "");
-  const result = await csv(data);
-  let arrlen = result.length / 800;
 
-  for (const row of result) {
-    if (countData === 0) {
-      let keys = Object.keys(row);
-      x_axis.push(Number(row["GPS_Lng"]));
-      y_axis.push(Number(row["GPS_Lat"]));
-      z_axis.push(Number(row["GPS_Alt"]));
-      path_color.push(String(row["Color_on_Path"]));
-      time_us.push(Number(row["TimeUS"]));
-      rcou_c9.push(Number(row["RCOU_C9"]));
-      qtun_dalt.push(Number(row["QTUN_DAlt"]));
-      qtun_alt.push(Number(row["QTUN_Alt"]));
-      tecs_dh.push(Number(row["TECS_dh"]));
-      baro_crt.push(Number(row["BARO_CRt"]));
-      arsp_arsp.push(Number(row["ARSP_Airspeed"]));
-      ctun_nvap.push(Number(row["CTUN_NavPitch"]));
-      att_desroll.push(Number(row["ATT_DesRoll"]));
-      att_roll.push(Number(row["ATT_Roll"]));
-      att_yaw.push(Number(row["ATT_Yaw"]));
-      att_desyaw.push(Number(row["ATT_DesYaw"]));
-      ctun_rdr.push(Number(row["CTUN_RdrOut"]));
-      aoa_aoa.push(Number(row["AOA_AOA"]));
-      aoa_ssa.push(Number(row["AOA_SSA"]));
-      nkf_vwn.push(Number(row["NKF2_VWN"]));
-      nkf_vwe.push(Number(row["NKF2_VWE"]));
-      volt_curr.push(Number(row["Volt_x_Curr"]));
-      countData = arrlen.toFixed(0);
-    } else {
-      countData = countData - 1;
-    }
+  const { id } = context.query;
+  if (!id) {
+    return {
+      redirect: "/404",
+      permanent: false,
+    };
   }
-  return {
-    props: {
-      x_axis,
-      y_axis,
-      z_axis,
-      path_color,
-      time_us,
-      rcou_c9,
-      qtun_dalt,
-      qtun_alt,
-      tecs_dh,
-      baro_crt,
-      arsp_arsp,
-      ctun_nvap,
-      att_desroll,
-      att_roll,
-      att_yaw,
-      att_desyaw,
-      ctun_rdr,
-      aoa_aoa,
-      aoa_ssa,
-      nkf_vwn,
-      nkf_vwe,
-      volt_curr,
-    }, // will be passed to the page component as props
-  };
+
+  try {
+    let data = await fs.readFile(
+      `python_file/data/data_to_web/${id}.csv`,
+      "utf8"
+    );
+    data = data.replaceAll(/^\uFEFF/gm, "").replaceAll(/^\u00BB\u00BF/gm, "");
+    const result = await csv(data);
+    let arrlen = result.length / 800;
+
+    for (const row of result) {
+      if (countData === 0) {
+        x_axis.push(Number(row["GPS_Lng"]));
+        y_axis.push(Number(row["GPS_Lat"]));
+        z_axis.push(Number(row["GPS_Alt"]));
+        path_color.push(String(row["Color_on_Path"]));
+        time_us.push(Number(row["TimeUS"]));
+        rcou_c9.push(Number(row["RCOU_C9"]));
+        qtun_dalt.push(Number(row["QTUN_DAlt"]));
+        qtun_alt.push(Number(row["QTUN_Alt"]));
+        tecs_dh.push(Number(row["TECS_dh"]));
+        baro_crt.push(Number(row["BARO_CRt"]));
+        arsp_arsp.push(Number(row["ARSP_Airspeed"]));
+        ctun_nvap.push(Number(row["CTUN_NavPitch"]));
+        att_desroll.push(Number(row["ATT_DesRoll"]));
+        att_roll.push(Number(row["ATT_Roll"]));
+        att_yaw.push(Number(row["ATT_Yaw"]));
+        att_desyaw.push(Number(row["ATT_DesYaw"]));
+        ctun_rdr.push(Number(row["CTUN_RdrOut"]));
+        aoa_aoa.push(Number(row["AOA_AOA"]));
+        aoa_ssa.push(Number(row["AOA_SSA"]));
+        nkf_vwn.push(Number(row["NKF2_VWN"]));
+        nkf_vwe.push(Number(row["NKF2_VWE"]));
+        volt_curr.push(Number(row["Volt_x_Curr"]));
+        countData = arrlen.toFixed(0);
+      } else {
+        countData = countData - 1;
+      }
+    }
+    return {
+      props: {
+        is_valid: true,
+        x_axis,
+        y_axis,
+        z_axis,
+        path_color,
+        time_us,
+        rcou_c9,
+        qtun_dalt,
+        qtun_alt,
+        tecs_dh,
+        baro_crt,
+        arsp_arsp,
+        ctun_nvap,
+        att_desroll,
+        att_roll,
+        att_yaw,
+        att_desyaw,
+        ctun_rdr,
+        aoa_aoa,
+        aoa_ssa,
+        nkf_vwn,
+        nkf_vwe,
+        volt_curr,
+      }, // will be passed to the page component as props
+    };
+  } catch (error) {
+    return {
+      props: {
+        is_valid: false,
+      }
+    };
+  }
 }

@@ -41,17 +41,19 @@ const handler = async (req, res) => {
   }
   const uploadId = generateId();
   await readFile(req, true, uploadId);
-  console.log("exec...")
+  console.log(`executing with upload_id = ${uploadId}`)
   try {
     exec(`python3 ./python_file/get_complete_data.py ${uploadId}`, (error, stdout, stderr) => {
+      if (error) {
+      }
       console.log(`stdout: ${stdout}`);
       console.error(`stderr: ${stderr}`);
-    })
-    res.json({ success:  true, id: uploadId });
+    })  
   } catch(error) {
     console.error(error)
+    res.json({ success: false, id: uploadId, error: error.toString() });
   }
-  
+  res.json({ success:  true, id: uploadId });
   
 };
 

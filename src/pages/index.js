@@ -9,10 +9,8 @@ import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import { CircularProgress } from "@mui/material";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export default function Home() {
-  const router = useRouter();
+  const router = useRouter()
   const [fileName, setFileName] = React.useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = React.useState(null);
@@ -55,10 +53,14 @@ export default function Home() {
       method: "POST",
       body,
     });
+    
+    const resBody = await response.json();
 
-    console.log(response.body)
+    if (!resBody.id) {
+      return
+    }
 
-    // router.push(`/show/${response.id}`);
+    router.push(`/show/${resBody.id}`);
 
     setLoading(false);
   };
