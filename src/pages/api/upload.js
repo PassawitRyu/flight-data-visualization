@@ -44,14 +44,18 @@ const handler = async (req, res) => {
   console.log("exec...")
   try {
     exec(`python3 ./python_file/get_complete_data.py ${uploadId}`, (error, stdout, stderr) => {
+      if (error) {
+        console.log("ERRORRRRRRR")
+      }
       console.log(`stdout: ${stdout}`);
       console.error(`stderr: ${stderr}`);
-    })
-    res.json({ success:  true, id: uploadId });
+    })  
   } catch(error) {
+    console.log("ERRORRRRRRR ZAZA")
     console.error(error)
+    res.json({ success: false, id: uploadId, error: error.toString() });
   }
-  
+  res.json({ success:  true, id: uploadId });
   
 };
 

@@ -4,25 +4,11 @@
 #
 #####################
 
-import pandas as pd
 import csv
 import numpy as np
-import math
 import sys
 import os
-import matplotlib.pyplot as plt
-import seaborn as sns
 import time
-import shutil
-
-from datetime import datetime
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.feature_selection import f_regression
-from sklearn.feature_selection import RFE
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import Lasso
-from sklearn import metrics
 
 # set parameter
 
@@ -75,13 +61,13 @@ def delete_all_file_in_dir() :
         except OSError :
             print("Error deleting file:", file_path)
     
-    for filename in os.listdir(directory_web) :
-        file_path = os.path.join(directory_web, filename)
-        try :
-            if os.path.isfile(file_path) :
-                os.remove(file_path)
-        except OSError :
-            print("Error deleting file:", file_path)
+    # for filename in os.listdir(directory_web) :
+    #     file_path = os.path.join(directory_web, filename)
+    #     try :
+    #         if os.path.isfile(file_path) :
+    #             os.remove(file_path)
+    #     except OSError :
+    #         print("Error deleting file:", file_path)
 
 def split_data_into_sub_list():
 
