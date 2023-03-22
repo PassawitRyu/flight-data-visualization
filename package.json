@@ -1,0 +1,32 @@
+{
+  "name": "project-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mui/material": "^5.11.8",
+    "@mui/styles": "^5.11.13",
+    "@next/font": "13.1.5",
+    "busboy": "^1.6.0",
+    "cesium": "^1.102.0",
+    "chart.js": "^4.2.0",
+    "chartjs-plugin-zoom": "^2.0.0",
+    "csv-reader": "^1.0.11",
+    "formidable": "^2.1.1",
+    "mapbox-gl": "^2.12.0",
+    "neat-csv": "^7.0.0",
+    "next": "13.1.5",
+    "react": "18.2.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "18.2.0",
+    "react-material-ui-carousel": "^3.4.2",
+    "react-router-dom": "^6.8.1"
+  }
+}
