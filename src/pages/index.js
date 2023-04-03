@@ -7,13 +7,15 @@ import IconButton from "@mui/material/IconButton";
 import ClearIcon from "@mui/icons-material/Clear";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Menu, MenuItem } from "@mui/material";
 
 export default function Home() {
-  const router = useRouter()
+  const router = useRouter();
   const [fileName, setFileName] = React.useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
   const formRef = useRef();
 
   const clearFileInput = () => {
@@ -53,11 +55,11 @@ export default function Home() {
       method: "POST",
       body,
     });
-    
+
     const resBody = await response.json();
 
     if (!resBody.id) {
-      return
+      return;
     }
 
     router.push(`/show/${resBody.id}`);
@@ -65,7 +67,19 @@ export default function Home() {
     setLoading(false);
   };
 
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
   const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleSelect = () => {
+    router.push(`/show/03a3a3289a370b8c1f269e25e2a68941`);
+    handleClose();
+  };
+
+  const handleAlertClose = () => {
     setErrorMessage(null);
   };
 
@@ -109,6 +123,46 @@ export default function Home() {
             alignItems: "center",
           }}
         >
+          <Button
+            id="review-flight-button"
+            justifyContent="center"
+            aria-haspopup="true"
+            aria-expanded={open ? "true" : undefined}
+            onClick={handleClick}
+            variant="contained"
+            size="large"
+            color="secondary"
+            sx={{ mt: 5 }}
+          >
+            <b>Visualization Filght</b>
+          </Button>
+          <Menu
+            id="review-flight-button"
+            aria-labelledby="review-flight-button"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "center",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+          >
+            <MenuItem onClick={() => handleSelect()}>
+              Flight 1
+            </MenuItem>
+          </Menu>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           {loading > 0 && <CircularProgress sx={{ mt: 10 }} />}
         </div>
       </form>
@@ -121,7 +175,7 @@ export default function Home() {
             height: "30vh",
           }}
         >
-          <Alert variant="filled" severity="error" onClose={handleClose}>
+          <Alert variant="filled" severity="error" onClose={handleAlertClose}>
             <AlertTitle>
               <b>Error !</b>
             </AlertTitle>

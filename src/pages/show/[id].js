@@ -29,6 +29,7 @@ import "cesium/Build/Cesium/Widgets/widgets.css";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { NotValid } from "@/components/NotValid";
+import { useRouter } from "next/router";
 
 Chart.register(
   CategoryScale,
@@ -59,9 +60,9 @@ function computeCircle(radius) {
 
 export default function Wrapper(props) {
   if (props.is_valid) {
-    return <ShowMap {...props}/>
+    return <ShowMap {...props} />;
   } else {
-    return <NotValid />
+    return <NotValid />;
   }
 }
 
@@ -80,6 +81,7 @@ function ShowMap(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const [correlation, setCorrelation] = useState([]);
+  const router = useRouter();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -510,31 +512,34 @@ function ShowMap(props) {
       let j = i == 0 ? 1 : i;
       let avrred = 0;
       let avrgreen = 0;
+      1 - 2 * (slicedPathColor[j + 2] - 50);
       let red_zero =
-        slicedPathColor[j] < 50
-          ? 1 - (2 * (slicedPathColor[j] - 50)) / 100.0
-          : 1.0;
+        slicedPathColor[j] < 50 ? (2 * slicedPathColor[j]) / 100.0 : 1.0;
       let red_one =
         slicedPathColor[j + 1] < 50
-          ? 1 - (2 * (slicedPathColor[j + 1] - 50)) / 100.0
+          ? (2 * slicedPathColor[j + 1]) / 100.0
           : 1.0;
       let red_two =
         slicedPathColor[j + 2] < 50
-          ? 1 - (2 * (slicedPathColor[j + 2] - 50)) / 100.0
+          ? (2 * slicedPathColor[j + 2]) / 100.0
           : 1.0;
       let green_zero =
-        slicedPathColor[j] < 50 ? 1.0 : (2 * slicedPathColor[j]) / 100.0;
+        slicedPathColor[j] < 50
+          ? 1.0
+          : 1 - (2 * (slicedPathColor[j] - 50)) / 100.0;
       let green_one =
         slicedPathColor[j + 1] < 50
           ? 1.0
-          : (2 * slicedPathColor[j + 1]) / 100.0;
+          : 1 - (2 * (slicedPathColor[j + 1] - 50)) / 100.0;
       let green_two =
         slicedPathColor[j + 2] < 50
           ? 1.0
-          : (2 * slicedPathColor[j + 2]) / 100.0;
+          : 1 - (2 * (slicedPathColor[j + 2] - 50)) / 100.0;
 
       avrred = (red_zero + red_one + red_two) / 3;
       avrgreen = (green_zero + green_one + green_two) / 3;
+
+      avrgreen = 0 ? 1.0 : avrgreen;
 
       let pos =
         i + 3 > positions.length
@@ -652,31 +657,38 @@ function ShowMap(props) {
             backgroundColor: "#c5fad3",
           }}
         >
-          <TextField
-            sx={{ mr: 5 }}
-            id="outlined-basic"
-            label="Time Start (sec)"
-            variant="outlined"
-            value={startValue}
-            onChange={handleTextChangeStart}
-          />
-          <TextField
-            sx={{ mr: 5 }}
-            id="outlined-basic"
-            label="Time End (sec)"
-            variant="outlined"
-            value={stopValue}
-            onChange={handleTextChangeEnd}
-          />
-          <Button
-            sx={{ backgroundColor: "#037aa6" }}
-            variant="contained"
-            size="large"
-            endIcon={<KeyboardDoubleArrowRightIcon />}
-            onClick={handleComputeTimeRange}
-          >
-            <b>Compute</b>
-          </Button>
+          <Stack direction="row" justifyContent="center" spacing={7}>
+            <TextField
+              id="outlined-basic"
+              label="Time Start (sec)"
+              variant="outlined"
+              value={startValue}
+              onChange={handleTextChangeStart}
+            />
+            <TextField
+              id="outlined-basic"
+              label="Time End (sec)"
+              variant="outlined"
+              value={stopValue}
+              onChange={handleTextChangeEnd}
+            />
+            <Button
+              sx={{ backgroundColor: "#037aa6" }}
+              variant="contained"
+              size="large"
+              endIcon={<KeyboardDoubleArrowRightIcon />}
+              onClick={handleComputeTimeRange}
+            >
+              <b>Compute</b>
+            </Button>
+            <Button
+              size="large"
+              variant="outlined"
+              onClick={() => router.reload()}
+            >
+              <b>Refresh</b>
+            </Button>
+          </Stack>
         </Paper>
       </div>
 
@@ -890,7 +902,7 @@ export async function getServerSideProps(context) {
     return {
       props: {
         is_valid: false,
-      }
+      },
     };
   }
 }
